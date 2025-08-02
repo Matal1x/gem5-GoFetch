@@ -575,7 +575,7 @@ machine(MachineType:L2Cache, "MESI Directory L2 Cache CMP")
     enqueue(L1RequestL2Network_out, RequestMsg, to_l1_latency) {
       assert(is_valid(cache_entry));
       out_msg.addr := address;
-      out_msg.Type := CoherenceRequestType:INV;
+      out_msg.Type := CoherenceRequestType:L2_EVICTION_INV;
       out_msg.Requestor := machineID;
       out_msg.Destination := cache_entry.Sharers;
       out_msg.MessageSize := MessageSizeType:Request_Control;

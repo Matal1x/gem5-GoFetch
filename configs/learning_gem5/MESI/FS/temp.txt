@@ -1,0 +1,57 @@
+flush All
+flush All
+flush All
+flush All
+--- OS Booted. Switching to Timing CPU... ---
+switching cpus
+flush All
+flush All
+src/sim/power_state.cc:105: warn: PowerState: Already in the requested power state, request ignored
+flush All
+flush All
+src/sim/simulate.cc:194: info: Entering event queue @ 3277396655667.  Starting simulation...
+src/mem/ruby/system/Sequencer.cc:606: warn: Replacement policy updates recently became the responsibility of SLICC state machines. Make sure to setMRU() near callbacks in .sm files!
+warn: User-specified generator for the exit event 'exit' has ended. Using the default generator.
+--- Simulation finished. Saving checkpoint to 'checkpoints' ---
+src/sim/simulate.cc:194: info: Entering event queue @ 3287277203563.  Starting simulation...
+src/sim/simulate.cc:194: info: Entering event queue @ 3287277765563.  Starting simulation...
+build/X86_MESI_Two_Level/mem/ruby/protocol/L1Cache_Controller.cc:1948: panic: Runtime Error at MESI_Two_Level-L1cache.sm:281: Invalid RubyRequestType.
+Memory Usage: 9145036 KBytes
+Program aborted at tick 3287277765999
+--- BEGIN LIBC BACKTRACE ---
+build/X86_MESI_Two_Level/gem5.opt(+0x17987d0)[0x55ec13ce57d0]
+build/X86_MESI_Two_Level/gem5.opt(+0x17bccdc)[0x55ec13d09cdc]
+/lib/x86_64-linux-gnu/libc.so.6(+0x42520)[0x7f029d209520]
+/lib/x86_64-linux-gnu/libc.so.6(pthread_kill+0x12c)[0x7f029d25d9fc]
+/lib/x86_64-linux-gnu/libc.so.6(raise+0x16)[0x7f029d209476]
+/lib/x86_64-linux-gnu/libc.so.6(abort+0xd3)[0x7f029d1ef7f3]
+build/X86_MESI_Two_Level/gem5.opt(+0x4ebf25)[0x55ec12a38f25]
+build/X86_MESI_Two_Level/gem5.opt(+0x10219d2)[0x55ec1356e9d2]
+build/X86_MESI_Two_Level/gem5.opt(+0x1046bd4)[0x55ec13593bd4]
+build/X86_MESI_Two_Level/gem5.opt(+0xf8242e)[0x55ec134cf42e]
+build/X86_MESI_Two_Level/gem5.opt(+0x17ad032)[0x55ec13cfa032]
+build/X86_MESI_Two_Level/gem5.opt(+0x17d73c8)[0x55ec13d243c8]
+build/X86_MESI_Two_Level/gem5.opt(+0x17d79bb)[0x55ec13d249bb]
+build/X86_MESI_Two_Level/gem5.opt(+0xfccb11)[0x55ec13519b11]
+build/X86_MESI_Two_Level/gem5.opt(+0xa5b06b)[0x55ec12fa806b]
+build/X86_MESI_Two_Level/gem5.opt(+0x516d34)[0x55ec12a63d34]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(+0x128033)[0x7f029dd42033]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(_PyObject_MakeTpCall+0x8c)[0x7f029dcf9aec]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(+0xe242a)[0x7f029dcfc42a]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(_PyEval_EvalFrameDefault+0x9d68)[0x7f029dc959c8]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(+0x1c24df)[0x7f029dddc4df]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(_PyEval_EvalFrameDefault+0x69de)[0x7f029dc9263e]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(+0x1c24df)[0x7f029dddc4df]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(_PyEval_EvalFrameDefault+0x9d68)[0x7f029dc959c8]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(+0x1c24df)[0x7f029dddc4df]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(_PyEval_EvalFrameDefault+0x829e)[0x7f029dc93efe]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(+0x1c24df)[0x7f029dddc4df]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(PyEval_EvalCode+0xbe)[0x7f029ddd750e]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(+0x1bda9d)[0x7f029ddd7a9d]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(+0x1287c3)[0x7f029dd427c3]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(_PyEval_EvalFrameDefault+0x69de)[0x7f029dc9263e]
+/lib/x86_64-linux-gnu/libpython3.10.so.1.0(+0x1c24df)[0x7f029dddc4df]
+--- END LIBC BACKTRACE ---
+For more info on how to address this issue, please visit https://www.gem5.org/documentation/general_docs/common-errors/ 
+
+Aborted

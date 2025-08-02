@@ -148,6 +148,8 @@ machine(MachineType:L1Cache, "MESI Directory L1 Cache CMP")
     LLSC_Data_all_Acks, desc="Data for processor, all acks (start LL/SC lock timer)";
     LLSC_Ack_all,       desc="Last ack for processor (start LL/SC lock timer)";
     LLSC_Timeout,       desc="LL/SC lock timeout";
+
+    L2_Eviction, desc="must invalidate entry due to L2 eviction";
   }
 
   // TYPES
@@ -475,7 +477,9 @@ machine(MachineType:L1Cache, "MESI Directory L1 Cache CMP")
         Entry cache_entry := getCacheEntry(in_msg.addr);
         TBE tbe := TBEs[in_msg.addr];
 
-        if (in_msg.Type == CoherenceRequestType:INV) {
+        if (in_msg.Type == CoherenceRequestType:L2_EVICTION_INV) {
+          trigger(Event:L2_Eviction, in_msg.addr, cache_entry, tbe);
+        } else if (in_msg.Type == CoherenceRequestType:INV) {
           trigger(Event:Inv, in_msg.addr, cache_entry, tbe);
         } else if (in_msg.Type == CoherenceRequestType:GETX ||
                    in_msg.Type == CoherenceRequestType:UPGRADE) {
@@ -1077,7 +1081,7 @@ machine(MachineType:L1Cache, "MESI Directory L1 Cache CMP")
     z_stallAndWaitMandatoryQueue;
   }
 
-  transition({LLSC_E, LLSC_M}, {Fwd_GETS, Fwd_GETX, Fwd_GET_INSTR, Inv}) {
+  transition({LLSC_E, LLSC_M}, {Fwd_GETS, Fwd_GETX, Fwd_GET_INSTR, Inv, L2_Eviction}) {
     z_stallAndWaitL1RequestQueue;
   }
 
@@ -1213,7 +1217,7 @@ machine(MachineType:L1Cache, "MESI Directory L1 Cache CMP")
     k_popMandatoryQueue;
   }
 
-  transition({NP, I}, Inv) {
+  transition({NP, I}, {Inv, L2_Eviction}) {
     fi_sendInvAck;
     l_popRequestQueue;
   }
@@ -1258,6 +1262,12 @@ machine(MachineType:L1Cache, "MESI Directory L1 Cache CMP")
     fi_sendInvAck;
     l_popRequestQueue;
   }
+  transition(S, L2_Eviction, I) {
+    forward_eviction_to_cpu;
+    fi_sendInvAck;
+    ff_deallocateL1CacheBlock;
+    l_popRequestQueue;
+  }
 
   // Transitions from Exclusive
 
@@ -1277,6 +1287,12 @@ machine(MachineType:L1Cache, "MESI Directory L1 Cache CMP")
   }
 
   transition(E, Inv, I) {
+    // don't send data
+    forward_eviction_to_cpu;
+    fi_sendInvAck;
+    l_popRequestQueue;
+  }
+  transition(E, L2_Eviction, I) {
     // don't send data
     forward_eviction_to_cpu;
     fi_sendInvAck;
@@ -1323,8 +1339,17 @@ machine(MachineType:L1Cache, "MESI Directory L1 Cache CMP")
     f_sendDataToL2;
     l_popRequestQueue;
   }
+  transition(M, L2_Eviction, I) {
+    forward_eviction_to_cpu;
+    f_sendDataToL2;
+    l_popRequestQueue;
+  }
 
   transition(M_I, Inv, SINK_WB_ACK) {
+    ft_sendDataToL2_fromTBE;
+    l_popRequestQueue;
+  }
+  transition(M_I, L2_Eviction, SINK_WB_ACK) {
     ft_sendDataToL2_fromTBE;
     l_popRequestQueue;
   }
@@ -1365,8 +1390,16 @@ machine(MachineType:L1Cache, "MESI Directory L1 Cache CMP")
     fi_sendInvAck;
     l_popRequestQueue;
   }
+  transition({IS, IS_I}, L2_Eviction, IS_I) {
+    fi_sendInvAck;
+    l_popRequestQueue;
+  }
 
   transition({PF_IS, PF_IS_I}, Inv, PF_IS_I) {
+    fi_sendInvAck;
+    l_popRequestQueue;
+  }
+  transition({PF_IS, PF_IS_I}, L2_Eviction, PF_IS_I) {
     fi_sendInvAck;
     l_popRequestQueue;
   }
@@ -1476,11 +1509,21 @@ machine(MachineType:L1Cache, "MESI Directory L1 Cache CMP")
     fi_sendInvAck;
     l_popRequestQueue;
   }
+  transition(IM, L2_Eviction, IM) {
+    fi_sendInvAck;
+    l_popRequestQueue;
+  }
+
 
   transition({PF_IM, PF_SM}, Inv, PF_IM) {
     fi_sendInvAck;
     l_popRequestQueue;
   }
+  transition({PF_IM, PF_SM}, L2_Eviction, PF_IM) {
+    fi_sendInvAck;
+    l_popRequestQueue;
+  }
+
 
   transition(IM, Data, SM) {
     u_writeDataToL1Cache;
@@ -1528,6 +1571,11 @@ machine(MachineType:L1Cache, "MESI Directory L1 Cache CMP")
     fi_sendInvAck;
     l_popRequestQueue;
   }
+  transition(SM, L2_Eviction, IM) {
+    forward_eviction_to_cpu;
+    fi_sendInvAck;
+    l_popRequestQueue;
+  }
 
   transition({SM, IM, PF_SM, PF_IM}, Ack) {
     q_updateAckCount;
@@ -1560,6 +1608,10 @@ machine(MachineType:L1Cache, "MESI Directory L1 Cache CMP")
   }
 
   transition(SINK_WB_ACK, Inv){
+    fi_sendInvAck;
+    l_popRequestQueue;
+  }
+  transition(SINK_WB_ACK, L2_Eviction){
     fi_sendInvAck;
     l_popRequestQueue;
   }

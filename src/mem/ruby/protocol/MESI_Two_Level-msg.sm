@@ -41,6 +41,8 @@ enumeration(CoherenceRequestType, desc="...") {
 
   DMA_READ, desc="DMA Read";
   DMA_WRITE, desc="DMA Write";
+
+  L2_EVICTION_INV, desc="Invalidation sent to the holders due to L2 eviction";
 }
 
 // CoherenceResponseType
